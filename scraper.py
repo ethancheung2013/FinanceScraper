@@ -11,7 +11,7 @@ url2 = "http://finance.yahoo.com/_xhr/top-story-temp/"
 
 form_data = "list_source=collection&apply_filter=0&filters=[]&content_id=6647ea16-dcee-3757-80a0-49b1b43f2f47&categories=%5B%5D&selected_tab=0&latest_on=0&s=1183300001&sec=MediaTopStoryTemp&story_start=51&storycount=50&popup_switch=1&provider_switch=1&timestamp_switch=1&max_title_length=100&more_inline=1&base_start=1&cache_ttl=TTL_LEVEL_10"
 
-conn = lite.connect('data.sqlite/financenews')
+conn = lite.connect('data.sqlite') #/financenews
 cur = conn.cursor()
 
 s = requests.Session()
