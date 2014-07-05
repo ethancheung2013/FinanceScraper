@@ -24,7 +24,7 @@ params = dict(sq)
 
 # with conn:
 
-for i in range(0, 101, 50):
+for i in range(0, 100001, 50):
     params['story_start'] = i
     res = s.post(url2, data=params, headers={'Referer': url})
 
