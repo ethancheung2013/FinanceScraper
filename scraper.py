@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     # with conn:
 
-    for i in range(0, 2, 50):
+    for i in range(0, 100001, 50):
         params['story_start'] = i
         res = s.post(url2, data=params, headers={'Referer': url})
 
