@@ -24,22 +24,22 @@ params = dict(sq)
 
 # with conn:
 
-for i in range(0, 100001, 50):
+for i in range(0, 10001, 50):
     params['story_start'] = i
     res = s.post(url2, data=params, headers={'Referer': url})
 
     soup = bs4.BeautifulSoup(res.content)
 
-    print ">>>>>>>>>>>>>>>",soup.li
+    # print ">>>>>>>>>>>>>>>",soup.li
     try:
         soup.li.cite.text.encode('utf-8').split('-')[-1].strip()
     except:
-        print "PASSING"
+        # print "PASSING"
         pass
 
     for article in soup.find_all('li'):
-        print "Title:"
-        print article.a.text.encode('utf-8')
+        # print "Title:"
+        # print article.a.text.encode('utf-8')
         title = article.a.text.encode('utf-8').replace("'",'').replace('"','')
         url = article.a.get('href').encode('utf-8')
         try:
@@ -47,11 +47,11 @@ for i in range(0, 100001, 50):
         except:
             date = dt.now()
         content = ''
-        print '\n', url, '\n', date
+        # print '\n', url, '\n', date
         try:
             more_articles = requests.get(url)
         except:
-            print 'in EXCEPT'
+            # print 'in EXCEPT'
             more_articles = requests.get("http://finance.yahoo.com/"+url)
 
         if more_articles.status_code == 200:
@@ -61,9 +61,9 @@ for i in range(0, 100001, 50):
             if (len(mainStory) == 0):
                 mainStory = innerSoup.find_all("div", { "class" : 'articlePage'} )
             if (len(mainStory) == 0):
-                print "trying body yom-art-content clearfix"
+                # print "trying body yom-art-content clearfix"
                 mainStory = innerSoup.find_all("div", { "class" : 'body yom-art-content clearfix'} )            
-            print "LENGTH ",len(mainStory)
+            # print "LENGTH ",len(mainStory)
             if (len(mainStory) > 0):
                 for eMainStory in mainStory:
                     innerP = eMainStory.findChildren('p', { "class" : "" })
@@ -90,16 +90,24 @@ for i in range(0, 100001, 50):
                             content += ' '.join(eMainStory[u].text.encode('utf-8').replace('"','').replace("'",'').split())
                             # print content
         # print content
-        print title
-        print url
-        print date
+        # print title
+        # print url
+        # print date
+
         with conn:
-            # whatis = 'INSERT INTO data (title, content, url, date) VALUES( "' + title + '","'+content+'","'+url+'","'+str(date)+'")'
-            whatis = "INSERT INTO data (title, content, url, date) VALUES( '" + title + "','"+content+"','"+url+"','"+str(date)+"')"
-            print "HHHHHH ", whatis
-            # cur.execute("INSERT INTO data (title, content, url, date) VALUES(" + title + "," + content + " ," + url + ", "+ date + ")")
-            cur.execute(whatis)
-            # cur.execute("INSERT INTO data (title, content, url, date) VALUES('title' ,'content','url','date')")
+            # don't add duplicates
+            check = "SELECT count(*) from data where title ='" + title + "'"
+            cur.execute(check)
+            # print cur.fetchone()[0]
+            numArticles = cur.fetchone()[0] 
+            # print numArticles
+            if numArticles == 0:
+                # whatis = 'INSERT INTO data (title, content, url, date) VALUES( "' + title + '","'+content+'","'+url+'","'+str(date)+'")'
+                whatis = "INSERT INTO data (title, content, url, date) VALUES( '" + title + "','"+content+"','"+url+"','"+str(date)+"')"
+                # print "HHHHHH ", whatis
+                # cur.execute("INSERT INTO data (title, content, url, date) VALUES(" + title + "," + content + " ," + url + ", "+ date + ")")
+                cur.execute(whatis)
+                # cur.execute("INSERT INTO data (title, content, url, date) VALUES('title' ,'content','url','date')")
 
         print "\n"
     time.sleep(0.5) 
